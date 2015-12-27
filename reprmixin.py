@@ -51,8 +51,3 @@ class ReprMixin(object):
             self.__class__.__name__,
             ', '.join('{0}={1}'.format(*t) for t in _iter_attributes(self)))
 
-
-if __name__ == '__main__':
-    import doctest
-    doctest.testmod()
-
