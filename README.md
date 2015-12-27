@@ -8,6 +8,7 @@ Note that class attributes, class methods, static methods, instance methods and 
 >>> from reprmixin import ReprMixin
 >>>
 >>> class Titi(ReprMixin):
+...     __slots__ = ['a', 'b', 'c']
 ...     clsvars = 'test'
 ...     def __init__(self, a, b):
 ...         self.a = a
@@ -17,16 +18,17 @@ Note that class attributes, class methods, static methods, instance methods and 
 ...     @property
 ...     def prop(self):
 ...         return self.b
+...     @prop.setter
+...     def prop(self, b):
+...         self.b = b
+...     @classmethod
+...     def clsmethod(cls):
+...         pass
+...     @staticmethod
+...     def static():
+...         pass
 
 >>> l = Titi(1, '2')
->>> l.a
-1
->>> l.b
-'2'
->>> l.method()
-1
->>> l.prop
-'2'
 >>> repr(l)
 "Titi(a=1, b='2')"
 
