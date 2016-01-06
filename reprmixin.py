@@ -4,6 +4,12 @@
 """
 Easy repr, namedtuple-like.
 
+>>> class CustomDescriptor(object):
+...     def __get__(self, obj, _):
+...         return obj.a
+...     def __set__(self, obj, value):
+...         obj.a = value
+
 >>> class Titi(ReprMixin):
 ...     __slots__ = ['a', 'b', 'c']
 ...     clsvars = 'test'
@@ -18,6 +24,7 @@ Easy repr, namedtuple-like.
 ...     @prop.setter
 ...     def prop(self, b):
 ...         self.b = b
+...     custom_desc = CustomDescriptor()
 ...     @classmethod
 ...     def clsmethod(cls):
 ...         pass
@@ -37,27 +44,30 @@ Easy repr, namedtuple-like.
 >>> l.prop = 'g'
 >>> l.prop
 'g'
+>>> l.custom_desc
+1
+>>> l.custom_desc = 2
 >>> l.clsmethod()
 >>> Titi.static()
 >>> repr(l)
-"Titi(a=1, b='g')"
+"Titi(a=2, b='g')"
 """
 
 def _iter_attributes(obj):
     """Iterate over all attributes on objects.
     """
-    cls = obj.__class__
-    for name in dir(obj):
-        # If __slots__ had elements undefined at __init__, getattr will fail
-        if not hasattr(obj, name):
-            continue
+    if hasattr(obj, '__dict__'):
+        names = sorted(obj.__dict__)
+    else:
+        names = obj.__slots__
+
+    for name in names:
         # No private stuff, feel free to comment or change this to "__"
         if name.startswith('_'):
             continue
-        # No methods, no properties, no class level attributes
-        if hasattr(cls, name):
-            if getattr(cls, name).__class__.__name__ != 'member_descriptor':
-                continue
+        # If __slots__ had elements undefined at __init__, getattr will fail
+        if not hasattr(obj, name):
+            continue
         yield name, repr(getattr(obj, name))
 
 
