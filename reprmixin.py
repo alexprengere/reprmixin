@@ -53,14 +53,27 @@ Easy repr, namedtuple-like.
 "Titi(a=2, b='g')"
 """
 
-def _iter_attributes(obj):
+import inspect
+
+
+def _find_attrs(obj):
     """Iterate over all attributes on objects.
     """
     if hasattr(obj, '__dict__'):
-        names = sorted(obj.__dict__)
-    else:
-        names = obj.__slots__
+        return sorted(obj.__dict__)
 
+    names = obj.__slots__
+    if names:
+        return names
+    for parent in inspect.getmro(obj.__class__):
+        if hasattr(parent, '__slots__'):
+            names += parent.__slots__
+        if names:
+            break
+    return names
+
+
+def _get_attrs(obj, names):
     for name in names:
         # No private stuff, feel free to comment or change this to "__"
         if name.startswith('_'):
@@ -75,7 +88,12 @@ class ReprMixin(object):
     __slots__ = []
 
     def __repr__(self):
+        names = _find_attrs(self)
         return '{0}({1})'.format(
             self.__class__.__name__,
-            ', '.join('{0}={1}'.format(*t) for t in _iter_attributes(self)))
+            ', '.join('{0}={1}'.format(*t) for t in _get_attrs(self, names)))
 
+
+if __name__ == '__main__':
+    import doctest
+    doctest.testmod()
