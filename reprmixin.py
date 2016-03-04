@@ -60,17 +60,14 @@ def _find_attrs(obj):
     """Iterate over all attributes on objects.
     """
     if hasattr(obj, '__dict__'):
-        return sorted(obj.__dict__)
+        for attr in sorted(obj.__dict__):
+            yield attr
+        return
 
-    names = obj.__slots__
-    if names:
-        return names
-    for parent in inspect.getmro(obj.__class__):
-        if hasattr(parent, '__slots__'):
-            names += parent.__slots__
-        if names:
-            break
-    return names
+    for cls in inspect.getmro(obj.__class__):
+        if hasattr(cls, '__slots__'):
+            for attr in cls.__slots__:
+                yield attr
 
 
 def _get_attrs(obj, names):
@@ -88,10 +85,10 @@ class ReprMixin(object):
     __slots__ = []
 
     def __repr__(self):
-        names = _find_attrs(self)
         return '{0}({1})'.format(
             self.__class__.__name__,
-            ', '.join('{0}={1}'.format(*t) for t in _get_attrs(self, names)))
+            ', '.join('{0}={1}'.format(*t)
+                      for t in _get_attrs(self, _find_attrs(self))))
 
 
 if __name__ == '__main__':
