@@ -64,7 +64,7 @@ def _find_attrs(obj):
             yield attr
         return
 
-    for cls in inspect.getmro(obj.__class__):
+    for cls in reversed(inspect.getmro(obj.__class__)):
         if hasattr(cls, '__slots__'):
             for attr in cls.__slots__:
                 yield attr
