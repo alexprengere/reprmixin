@@ -59,15 +59,20 @@ import inspect
 def _find_attrs(obj):
     """Iterate over all attributes on objects.
     """
+    visited = set()
+
     if hasattr(obj, '__dict__'):
         for attr in sorted(obj.__dict__):
-            yield attr
-        return
+            if attr not in visited:
+                yield attr
+                visited.add(attr)
 
     for cls in reversed(inspect.getmro(obj.__class__)):
         if hasattr(cls, '__slots__'):
             for attr in cls.__slots__:
-                yield attr
+                if attr not in visited:
+                    yield attr
+                    visited.add(attr)
 
 
 def _get_attrs(obj, names):
@@ -78,7 +83,8 @@ def _get_attrs(obj, names):
         # If __slots__ had elements undefined at __init__, getattr will fail
         if not hasattr(obj, name):
             continue
-        yield name, repr(getattr(obj, name))
+        if getattr(obj, name):
+            yield name, repr(getattr(obj, name))
 
 
 class ReprMixin(object):
