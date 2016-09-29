@@ -1,8 +1,9 @@
-# reprmixin
+# ReprMixin
 
 Automatic `repr` on your Python objects, with the classic namedtuple-like display.
 
-Note that class attributes, class methods, static methods, instance methods and properties will not appear in the `repr`, only instance attributes. This also works whether `slots` are defined or not.
+Note that class attributes, class methods, static methods, instance methods and properties will not appear in the `repr`, only instance attributes.
+This also works whether `slots` are defined or not.
 
 ```python
 >>> from reprmixin import ReprMixin
@@ -20,7 +21,6 @@ Note that class attributes, class methods, static methods, instance methods and 
 ...     @prop.setter
 ...     def prop(self, b):
 ...         self.b = b
-...     #custom_desc = CustomDescriptor()
 ...     @classmethod
 ...     def clsmethod(cls):
 ...         pass

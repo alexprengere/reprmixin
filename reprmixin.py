@@ -57,8 +57,7 @@ import inspect
 
 
 def _find_attrs(obj):
-    """Iterate over all attributes on objects.
-    """
+    """Iterate over all attributes of objects."""
     visited = set()
 
     if hasattr(obj, '__dict__'):
@@ -70,21 +69,10 @@ def _find_attrs(obj):
     for cls in reversed(inspect.getmro(obj.__class__)):
         if hasattr(cls, '__slots__'):
             for attr in cls.__slots__:
-                if attr not in visited:
-                    yield attr
-                    visited.add(attr)
-
-
-def _get_attrs(obj, names):
-    for name in names:
-        # No private stuff, feel free to comment or change this to "__"
-        if name.startswith('_'):
-            continue
-        # If __slots__ had elements undefined at __init__, getattr will fail
-        if not hasattr(obj, name):
-            continue
-        if getattr(obj, name):
-            yield name, repr(getattr(obj, name))
+                if hasattr(obj, attr):
+                    if attr not in visited:
+                        yield attr
+                        visited.add(attr)
 
 
 class ReprMixin(object):
@@ -93,8 +81,9 @@ class ReprMixin(object):
     def __repr__(self):
         return '{0}({1})'.format(
             self.__class__.__name__,
-            ', '.join('{0}={1}'.format(*t)
-                      for t in _get_attrs(self, _find_attrs(self))))
+            ', '.join('{0}={1}'.format(attr, repr(getattr(self, attr)))
+                      for attr in _find_attrs(self)
+                      if not attr.startswith('_') and getattr(self, attr)))
 
 
 if __name__ == '__main__':
