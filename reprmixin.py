@@ -83,7 +83,7 @@ class ReprMixin(object):
             self.__class__.__name__,
             ', '.join('{0}={1}'.format(attr, repr(getattr(self, attr)))
                       for attr in _find_attrs(self)
-                      if not attr.startswith('_') and getattr(self, attr)))
+                      if not attr.startswith('_')))
 
 
 if __name__ == '__main__':
