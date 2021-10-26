@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
 """
 Easy repr, namedtuple-like.
@@ -60,14 +59,14 @@ def _find_attrs(obj):
     """Iterate over all attributes of objects."""
     visited = set()
 
-    if hasattr(obj, '__dict__'):
+    if hasattr(obj, "__dict__"):
         for attr in sorted(obj.__dict__):
             if attr not in visited:
                 yield attr
                 visited.add(attr)
 
     for cls in reversed(inspect.getmro(obj.__class__)):
-        if hasattr(cls, '__slots__'):
+        if hasattr(cls, "__slots__"):
             for attr in cls.__slots__:
                 if hasattr(obj, attr):
                     if attr not in visited:
@@ -75,17 +74,21 @@ def _find_attrs(obj):
                         visited.add(attr)
 
 
-class ReprMixin(object):
+class ReprMixin:
     __slots__ = []
 
     def __repr__(self):
-        return '{0}({1})'.format(
+        return "{}({})".format(
             self.__class__.__name__,
-            ', '.join('{0}={1}'.format(attr, repr(getattr(self, attr)))
-                      for attr in _find_attrs(self)
-                      if not attr.startswith('_')))
+            ", ".join(
+                "{}={}".format(attr, repr(getattr(self, attr)))
+                for attr in _find_attrs(self)
+                if not attr.startswith("_")
+            ),
+        )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     import doctest
+
     doctest.testmod()
