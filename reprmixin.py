@@ -81,7 +81,7 @@ class ReprMixin:
         return "{}({})".format(
             self.__class__.__name__,
             ", ".join(
-                "{}={}".format(attr, repr(getattr(self, attr)))
+                f"{attr}={repr(getattr(self, attr))}"
                 for attr in _find_attrs(self)
                 if not attr.startswith("_")
             ),
